@@ -1,3 +1,12 @@
+function KtParameterException(message)
+{
+	this.name = "KtParameterException";
+	this.message = (message) ? message : "";
+}
+
+KtParameterException.prototype = new Error();
+
+
 function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 {
 	this._baseApiUrl = "http://api.geo.kontagent.net/api/v1/";
@@ -10,7 +19,19 @@ function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 }
 
 Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, callback)
-{	
+{
+	if (this._validateParams) {
+		var result;
+
+		for (var paramKey in params) {
+			result = KtValidator.validateParameter(messageType, paramKey, params[paramKey]);
+
+			if (result != true) {
+				throw new KtParameterException(result);
+			}
+		}
+	}
+
  	var img = new Image();
 	
 	img.onerror = callback;
@@ -28,43 +49,43 @@ Kontagent.prototype._httpBuildQuery = function(data)
 	var query, key, val;
 	var tmpArray = [];
 
-    for(key in data) {
-        val = encodeURIComponent(decodeURIComponent(data[key].toString()));
-        key = encodeURIComponent(decodeURIComponent(key));
+	for(key in data) {
+		val = encodeURIComponent(decodeURIComponent(data[key].toString()));
+		key = encodeURIComponent(decodeURIComponent(key));
 
-        tmpArray.push(key + "=" + val);  
-    }
+		tmpArray.push(key + "=" + val);  
+	}
 
-    return tmpArray.join("&");
+	return tmpArray.join("&");
 }
 
 Kontagent.prototype._s4 = function() 
 {
-   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
 }
 
 /* Helper Methods */
 
-Kontagent.prototype.genTrackingTag = function()
+Kontagent.prototype.genUniqueTrackingTag = function()
 {
-	var trackingTag = "";
+	var uniqueTrackingTag = "";
 	
-	for(i=0; i<8; i++) {
-		trackingTag += this._s4();
+	for(i=0; i<4; i++) {
+		uniqueTrackingTag += this._s4();
 	}
 	
-	return trackingTag;
+	return uniqueTrackingTag;
 }
 
-Kontagent.prototype.genShortTrackingTag = function()
+Kontagent.prototype.genShortUniqueTrackingTag = function()
 {
-	var shortTrackingTag = "";
+	var shortUniqueTrackingTag = "";
 	
-	for(i=0; i<8; i++) {
-		shortTrackingTag += this._s4();
+	for(i=0; i<2; i++) {
+		shortUniqueTrackingTag += this._s4();
 	}
 	
-	return shortTrackingTag;
+	return shortUniqueTrackingTag;
 }
 
 /* Tracking Methods */
@@ -77,9 +98,9 @@ Kontagent.prototype.trackInviteSent = function(params, callback)
 		u : params.uniqueTrackingTag
 	};
 	
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
 	this._sendMessageViaImgTag("ins", apiParams, callback);
 }
@@ -92,9 +113,9 @@ Kontagent.prototype.trackInviteResponse = function(params, callback)
 	};
 	
 	if (params.recipientUserId) { apiParams.r = params.recipientUserId; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
 	this._sendMessageViaImgTag("inr", apiParams, callback);
 }
@@ -107,9 +128,9 @@ Kontagent.prototype.trackNotificationSent = function(params, callback)
 		u : params.uniqueTrackingTag
 	};
 	
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
 	this._sendMessageViaImgTag("nts", apiParams, callback);
 }
@@ -122,9 +143,9 @@ Kontagent.prototype.trackNotificationResponse = function(params, callback)
 	};
 	
 	if (params.recipientUserId) { apiParams.r = params.recipientUserId; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
 	this._sendMessageViaImgTag("ntr", apiParams, callback);
 }
@@ -137,14 +158,14 @@ Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
 		u : params.uniqueTrackingTag
 	};
 	
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
 	this._sendMessageViaImgTag("nes", apiParams, callback);
 }
 
-Kontagent.prototype.trackNotificationEmailResponse = functionparams, callback)
+Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -152,9 +173,9 @@ Kontagent.prototype.trackNotificationEmailResponse = functionparams, callback)
 	};
 	
 	if (params.recipientUserId) { apiParams.r = params.recipientUserId; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 	
 	this._sendMessageViaImgTag("nei", apiParams, callback);
 }
@@ -167,9 +188,9 @@ Kontagent.prototype.trackStreamPost = function(params, callback)
 		tu : params.type
 	};
 	
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
 	this._sendMessageViaImgTag("pst", apiParams, callback);
 }
@@ -183,9 +204,9 @@ Kontagent.prototype.trackStreamPostResponse = function(params, callback)
 	};
 	
 	if (params.recipientUserId) { apiParams.r = params.recipientUserId; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
 	this._sendMessageViaImgTag("psr", apiParams, callback);
 }
@@ -199,9 +220,9 @@ Kontagent.prototype.trackEvent = function(params, callback)
 	
 	if (params.value) { apiParams.v = params.value; }
 	if (params.level) { apiParams.l = params.level; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
 	this._sendMessageViaImgTag("evt", apiParams, callback);
 }
@@ -212,6 +233,8 @@ Kontagent.prototype.trackApplicationAdded = function(params, callback)
 	
 	if (params.uniqueTrackingTag) { apiParams.u = params.uniqueTrackingTag; }
 	if (params.shortUniqueTrackingTag) { apiParams.su = params.shortUniqueTrackingTag; }
+
+	console.log(apiParams);
 
 	this._sendMessageViaImgTag("apa", apiParams, callback);
 }
@@ -227,14 +250,14 @@ Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
-		tu : params.type
+		tu : params.type,
+		su : params.shortUniqueTrackingTag
 	};
 	
-	if (params.shortUniqueTrackingTag) { apiParams.su = params.shortUniqueTrackingTag; }
 	if (params.userId) { apiParams.s = params.userId; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }	
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 	
 	this._sendMessageViaImgTag("ucc", apiParams, callback);
 }
@@ -284,13 +307,14 @@ Kontagent.prototype.trackRevenueTracking = function(params, callback)
 	};
 	
 	if (params.type) { apiParams.tu = params.type; }
-	if (params.st1) { apiParams.st1 = params.st1; }
-	if (params.st2) { apiParams.st2 = params.st2; }
-	if (params.st3) { apiParams.st3 = params.st3; }
+	if (params.subtype1) { apiParams.st1 = params.subtype1; }
+	if (params.subtype2) { apiParams.st2 = params.subtype2; }
+	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
 	this._sendMessageViaImgTag("mtu", apiParams, callback);
 }
 
+// Kontagent Validator
 
 function KtValidator()
 {
@@ -298,8 +322,7 @@ function KtValidator()
 
 KtValidator.validateParameter = function(messageType, paramName, paramValue) 
 {
-	var funcName = 'KtValidator._validate' + KtValidator._upperCaseFirst(paramName);
-	return eval(funcName + '()');
+	return KtValidator['_validate' + KtValidator._upperCaseFirst(paramName)](messageType, paramName, paramValue);
 }
 
 KtValidator._upperCaseFirst = function(stringVal)
@@ -307,10 +330,12 @@ KtValidator._upperCaseFirst = function(stringVal)
 	return stringVal.charAt(0).toUpperCase() + stringVal.slice(1);
 }
 
-KtValidator._validateB(messageType, paramValue)
+KtValidator._validateB = function(messageType, paramName, paramValue) 
 {
 	// birthyear param (cpu message)
-	if (paramValue != parseInt(paramValue) || paramValue < 1900 || paramValue > 2011) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue) 
+		|| paramValue < 1900 || paramValue > 2011
+	) {
 		return 'Invalid birth year.';
 	} else {
 		return true;
@@ -318,127 +343,141 @@ KtValidator._validateB(messageType, paramValue)
 
 }
 
-KtValidator._validateF(messageType, paramValue)
+KtValidator._validateF = function(messageType, paramName, paramValue) 
 {
 	// friend count param (cpu message)
-	if (paramValue != parseInt(paramValue) || paramValue < 0) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue) || paramValue < 0) {
 		return 'Invalid friend count.'
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateG(messageType, paramValue)
-{
+KtValidator._validateG = function(messageType, paramName, paramValue) 
+{	
 	// gender param (cpu message)
-	if (paramvalue.match(/^[mfu]$/) == null) {
+	var regex = /^[mfu]$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid gender.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateGc1(messageType, paramValue)
+KtValidator._validateGc1 = function(messageType, paramName, paramValue) 
 {
 	// goal count param (gc1, gc2, gc3, gc4 messages)
-	if (paramValue != parseInt(paramValue) || paramValue < -16384 || paramValue > 16384) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue) 
+		|| paramValue < -16384 || paramValue > 16384
+	) {
 		return 'Invalid goal count value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateGc2(messageType, paramValue)
+KtValidator._validateGc2 = function(messageType, paramName, paramValue) 
 {
-	return KtValidator._validateGc1(messageType, paramValue);
+	return KtValidator._validateGc1(messageType, paramName, paramValue);
 }
 
-KtValidator._validateGc3(messageType, paramValue)
+KtValidator._validateGc3 = function(messageType, paramName, paramValue) 
 {
-	return KtValidator._validateGc1(messageType, paramValue);
+	return KtValidator._validateGc1(messageType, paramName, paramValue);
 }
 
-KtValidator._validateGc4(messageType, paramValue)
+KtValidator._validateGc4 = function(messageType, paramName, paramValue) 
 {
-	return KtValidator._validateGc1(messageType, paramValue);
+	return KtValidator._validateGc1(messageType, paramName, paramValue);
 }
 
-KtValidator._validateI(messageType, paramValue)
+KtValidator._validateI = function(messageType, paramName, paramValue) 
 {
 	// isAppInstalled param (inr, psr, ner, nei messages)
-	if (paramValue.match(/^(0|1)$/) == null) {
+	var regex = /^[01]$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid isAppInstalled value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateIp(messageType, paramValue)
+KtValidator._validateIp = function(messageType, paramName, paramValue) 
 {
 	// ip param (pgr messages)
-	if (paramValue.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\.\d{1,3})?$/) == null) {
+	var regex = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\.\d{1,3})?$/; 
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid IP address value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateL(messageType, paramValue)
+KtValidator._validateL = function(messageType, paramName, paramValue) 
 {
 	// level param (evt messages)
-	if (paramValue != parseInt(paramValue) || paramValue < 0) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue) || paramValue < 0) {
 		return 'Invalid level value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateLc(messageType, paramValue)
+KtValidator._validateLc = function(messageType, paramName, paramValue) 
 {
 	// country param (cpu messages)
-	if (paramValue.match(/^[A-Z]{2}$/) == null) {
+	var regex = /^[A-Z]{2}$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid country value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateLp(messageType, paramValue)
+KtValidator._validateLp = function(messageType, paramName, paramValue) 
 {
 	// postal/zip code param (cpu messages)
 	// this parameter isn't being used so we just return true for now
 	return true;
 }
 
-KtValidator._validateLs(messageType, paramValue)
+KtValidator._validateLs = function(messageType, paramName, paramValue) 
 {
 	// state param (cpu messages)
 	// this parameter isn't being used so we just return true for now
 	return true;
 }
 
-KtValidator._validateN(messageType, paramValue)
+KtValidator._validateN = function(messageType, paramName, paramValue) 
 {
 	// event name param (evt messages)
-	if (paramValue.match(/^[A-Za-z0-9-_]{1,32}$/) == null) {
+	var regex = /^[A-Za-z0-9-_]{1,32}$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid event name value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateR(messageType, paramValue)
+KtValidator._validateR = function(messageType, paramName, paramValue) 
 {
 	// Sending messages include multiple recipients (comma separated) and
 	// response messages can only contain 1 recipient UID.
 	if (messageType == 'ins' || messageType == 'nes' || messageType == 'nts') {
 		// recipients param (ins, nes, nts messages)
-		if (paramValue.match(/^[0-9]+(,[0-9]+)*$/) == null) {
+		var regex = /^[0-9]+(,[0-9]+)*$/;
+
+		if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 			return 'Invalid recipient user ids.';
 		}
-	} elseif (messageType == 'inr' || messageType == 'psr' || messageType == 'nei' || messageType == 'ntr') {
+	} else if (messageType == 'inr' || messageType == 'psr' || messageType == 'nei' || messageType == 'ntr') {
 		// recipient param (inr, psr, nei, ntr messages)
-		if (paramValue != parseInt(paramValue)) {
+		if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue)) {
 			return 'Invalid recipient user id.';
 		}
 	}
@@ -446,70 +485,82 @@ KtValidator._validateR(messageType, paramValue)
 	return true;
 }
 
-KtValidator._validateS(messageType, paramValue)
+KtValidator._validateS = function(messageType, paramName, paramValue) 
 {
 	// userId param
-	if (paramValue != parseInt(paramValue)) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue)) {
 		return 'Invalid user id.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateSt1(messageType, paramValue)
+KtValidator._validateSt1 = function(messageType, paramName, paramValue) 
 {
 	// subtype1 param
-	if (paramValue.match(/^[A-Za-z0-9-_]{1,32}$/) == null) {
+	var regex = /^[A-Za-z0-9-_]{1,32}$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid subtype value.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateSt2(messageType, paramValue)
+KtValidator._validateSt2 = function(messageType, paramName, paramValue) 
 {
-	return KtValidator._validateSt1(messageType, paramValue, errorMessage);
+	return KtValidator._validateSt1(messageType, paramName, paramValue);
 }
 
-KtValidator._validateSt3(messageType, paramValue)
+KtValidator._validateSt3 = function(messageType, paramName, paramValue) 
 {
-	return KtValidator._validateSt1(messageType, paramValue, errorMessage);
+	return KtValidator._validateSt1(messageType, paramName, paramValue);
 }
 
-KtValidator._validateSu(messageType, paramValue)
+KtValidator._validateSu = function(messageType, paramName, paramValue) 
 {
 	// short tracking tag param
-	if (paramValue.match(/^[A-Fa-f0-9]{8}$/) == null) {
+	var regex = /^[A-Fa-f0-9]{8}$/;
+
+	if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 		return 'Invalid short unique tracking tag.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateTs(messageType, paramValue)
+KtValidator._validateTs = function(messageType, paramName, paramValue) 
 {
 	// timestamp param (pgr message)
-	if (paramValue != parseInt(paramValue)) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue)) {
 		return 'Invalid timestamp.';
 	} else {
 		return true;
 	}
 }
 
-KtValidator._validateTu(messageType, paramValue)
+KtValidator._validateTu = function(messageType, paramName, paramValue) 
 {
 	// type parameter (mtu, pst/psr, ucc messages)
 	// acceptable values for this parameter depends on the message type
+	var regex;
+
 	if (messageType == 'mtu') {
-		if (paramValue.match(/^direct|indirect|advertisement|credits|other$/) == null) {
-			rrorMessage = 'Invalid monetization type.';
+		regex = /^(direct|indirect|advertisement|credits|other)$/;
+	
+		if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
+			return 'Invalid monetization type.';
 		}
-	} elseif (messageType == 'pst' || messageType == 'psr') {
-		if (paramValue.match(/^feedpub|stream|feedstory|multifeedstory|dashboard_activity|dashboard_globalnews$/) == null) {
+	} else if (messageType == 'pst' || messageType == 'psr') {
+		regex = /^(feedpub|stream|feedstory|multifeedstory|dashboard_activity|dashboard_globalnews)$/;
+
+		if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 			return 'Invalid stream post/response type.';
 		}
-	} elseif (messageType == 'ucc') {
-		if (paramValue.match(/^ad|partner$/) == null) {
+	} else if (messageType == 'ucc') {
+		regex = /^(ad|partner)$/;
+
+		if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 			return 'Invalid third party communication click type.';
 		}
 	}
@@ -517,12 +568,14 @@ KtValidator._validateTu(messageType, paramValue)
 	return true;
 }
 
-KtValidator._validateU(messageType, paramValue)
+KtValidator._validateU = function(messageType, paramName, paramValue) 
 {
 	// unique tracking tag parameter for all messages EXCEPT pgr.
 	// for pgr messages, this is the "page address" param
 	if (messageType != 'pgr') {
-		if (paramValue.match(/^[A-Fa-f0-9]{32}$/) == null) {
+		var regex = /^[A-Fa-f0-9]{16}$/;
+
+		if (typeof paramValue == "undefined" || !regex.test(paramValue)) {
 			return 'Invalid unique tracking tag.';
 		}
 	}
@@ -530,10 +583,10 @@ KtValidator._validateU(messageType, paramValue)
 	return true;
 }
 
-KtValidator._validateV(messageType, paramValue)
+KtValidator._validateV = function(messageType, paramName, paramValue) 
 {
 	// value param (mtu, evt messages)
-	if (paramValue != parseInt(paramValue)) {
+	if (typeof paramValue == "undefined" || paramValue != parseInt(paramValue)) {
 		return 'Invalid value.';
 	} else {
 		return true;
