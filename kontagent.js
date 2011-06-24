@@ -6,7 +6,16 @@ function KtParameterException(message)
 
 KtParameterException.prototype = new Error();
 
-
+/*
+* Kontagent class constructor
+*
+* @constructor
+*
+* @param {string} apiKey The app's Kontagent API key
+* @param {string} apiSecret The app's Kontagent secret key
+* @param {bool} [useTestServer] Whether to send messages to the Kontagent Test Server
+* @param {bool} [validateParams] Whether to validate the parameters passed into the tracking methods
+*/
 function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 {
 	this._baseApiUrl = "http://api.geo.kontagent.net/api/v1/";
@@ -18,9 +27,18 @@ function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 	this._validateParams = (validateParams) ? validateParams : true;
 }
 
+/*
+* Sends the API message by creating an <img> tag.
+*
+* @param {string} messageType The message type to send ('apa', 'ins', etc.)
+* @param {object} params An associative array containing paramName => value (ex: 's'=>123456789)
+* @param {function} [callback] The callback function to execute once message has been sent
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, callback)
 {
-	if (this._validateParams) {
+	if (this._validateParams == true) {
 		var result;
 
 		for (var paramKey in params) {
@@ -44,6 +62,13 @@ Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, callba
 	}
 }
 
+/*
+* Generate URL-encoded query string (same as PHP's http_build_query())
+*
+* @param {object} data The object containing key, value data to encode
+*
+* @return {string) A URL-encoded string
+*/
 Kontagent.prototype._httpBuildQuery = function(data) 
 {
 	var query, key, val;
@@ -59,13 +84,21 @@ Kontagent.prototype._httpBuildQuery = function(data)
 	return tmpArray.join("&");
 }
 
+/*
+* Returns random 4-character hex
+*
+* @return {string} Random 4-character hex value
+*/
 Kontagent.prototype._s4 = function() 
 {
 	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
 }
 
-/* Helper Methods */
-
+/*
+* Generates a unique tracking tag.
+*
+*  @return {string} The unique tracking tag
+*/
 Kontagent.prototype.genUniqueTrackingTag = function()
 {
 	var uniqueTrackingTag = "";
@@ -77,6 +110,11 @@ Kontagent.prototype.genUniqueTrackingTag = function()
 	return uniqueTrackingTag;
 }
 
+/*
+* Generates a short unique tracking tag.
+*
+*  @return {string} The short unique tracking tag
+*/
 Kontagent.prototype.genShortUniqueTrackingTag = function()
 {
 	var shortUniqueTrackingTag = "";
@@ -86,10 +124,25 @@ Kontagent.prototype.genShortUniqueTrackingTag = function()
 	}
 	
 	return shortUniqueTrackingTag;
+
 }
 
-/* Tracking Methods */
-
+/*
+* Sends an Invite Sent message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the sending user
+* @param {string} params.recipientUserIds A comma-separated list of the recipient UIDs
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+* 	InviteSent->InviteResponse->ApplicationAdded messages. 
+* 	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackInviteSent = function(params, callback)
 {
 	var apiParams = {
@@ -105,6 +158,21 @@ Kontagent.prototype.trackInviteSent = function(params, callback)
 	this._sendMessageViaImgTag("ins", apiParams, callback);
 }
 
+/*
+* Sends an Invite Response message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	InviteSent->InviteResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.recipientUserId] The UID of the responding user
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackInviteResponse = function(params, callback)
 {
 	var apiParams = {
@@ -120,6 +188,22 @@ Kontagent.prototype.trackInviteResponse = function(params, callback)
 	this._sendMessageViaImgTag("inr", apiParams, callback);
 }
 
+/*
+* Sends an Notification Sent message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the sending user
+* @param {string} params.recipientUserIds A comma-separated list of the recipient UIDs
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationSent->NotificationResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackNotificationSent = function(params, callback)
 {
 	var apiParams = {
@@ -135,6 +219,21 @@ Kontagent.prototype.trackNotificationSent = function(params, callback)
 	this._sendMessageViaImgTag("nts", apiParams, callback);
 }
 
+/*
+* Sends an Notification Response message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationSent->NotificationResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.recipientUserId] The UID of the responding user
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackNotificationResponse = function(params, callback)
 {
 	var apiParams = {
@@ -150,6 +249,22 @@ Kontagent.prototype.trackNotificationResponse = function(params, callback)
 	this._sendMessageViaImgTag("ntr", apiParams, callback);
 }
 
+/*
+* Sends an Notification Email Sent message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the sending user
+* @param {string} params.recipientUserIds A comma-separated list of the recipient UIDs
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationEmailSent->NotificationEmailResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
 {
 	var apiParams = {
@@ -164,6 +279,22 @@ Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
 
 	this._sendMessageViaImgTag("nes", apiParams, callback);
 }
+
+/*
+* Sends an Notification Email Response message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationEmailSent->NotificationEmailResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.recipientUserId] The UID of the responding user
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 
 Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
 {
@@ -180,6 +311,24 @@ Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
 	this._sendMessageViaImgTag("nei", apiParams, callback);
 }
 
+/*
+* Sends an Stream Post message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the sending user
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationEmailSent->NotificationEmailResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} params.type The Facebook channel type
+*	(feedpub, stream, feedstory, multifeedstory, dashboard_activity, or dashboard_globalnews).
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
+
 Kontagent.prototype.trackStreamPost = function(params, callback)
 {
 	var apiParams = {
@@ -195,6 +344,23 @@ Kontagent.prototype.trackStreamPost = function(params, callback)
 	this._sendMessageViaImgTag("pst", apiParams, callback);
 }
 
+/*
+* Sends an Stream Post Response message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.uniqueTrackingTag 32-digit hex string used to match 
+*	NotificationEmailSent->NotificationEmailResponse->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} params.type The Facebook channel type
+*	(feedpub, stream, feedstory, multifeedstory, dashboard_activity, or dashboard_globalnews).
+* @param {string} [params.recipientUserId] The UID of the responding user
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackStreamPostResponse = function(params, callback)
 {
 	var apiParams = {
@@ -211,6 +377,21 @@ Kontagent.prototype.trackStreamPostResponse = function(params, callback)
 	this._sendMessageViaImgTag("psr", apiParams, callback);
 }
 
+/*
+* Sends an Custom Event message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the user
+* @param {string} params.eventName The name of the event
+* @param {int} [params.value] A value associated with the event
+* @param {int} [params.level] A level associated with the event (must be positive)
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackEvent = function(params, callback)
 {
 	var apiParams = {
@@ -227,6 +408,21 @@ Kontagent.prototype.trackEvent = function(params, callback)
 	this._sendMessageViaImgTag("evt", apiParams, callback);
 }
 
+/*
+* Sends an Application Added message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the installing user
+* @param {string} [params.uniqueTrackingTag] 16-digit hex string used to match 
+*	Invite/StreamPost/NotificationSent/NotificationEmailSent->ApplicationAdded messages. 
+*	See the genUniqueTrackingTag() helper method.
+* @param {string} [params.shortUniqueTrackingTag] 8-digit hex string used to match 
+*	ThirdPartyCommClicks->ApplicationAdded messages. 
+*	See the genShortUniqueTrackingTag() helper method.
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackApplicationAdded = function(params, callback)
 {
 	var apiParams = {s : params.userId};
@@ -239,12 +435,37 @@ Kontagent.prototype.trackApplicationAdded = function(params, callback)
 	this._sendMessageViaImgTag("apa", apiParams, callback);
 }
 
+/*
+* Sends an Application Removed message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the removing user
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackApplicationRemoved = function(params, callback)
 {
 	var apiParams = {s : params.userId};
 	
 	this._sendMessageViaImgTag("apr", apiParams, callback);
 }
+
+/*
+* Sends an Third Party Communication Click message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.type The third party comm click type (ad, partner).
+* @param {string} params.shortUniqueTrackingTag 8-digit hex string used to match 
+*	ThirdPartyCommClicks->ApplicationAdded messages. 
+* @param {string} [params.userId] The UID of the user
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 
 Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
 {
@@ -262,6 +483,17 @@ Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
 	this._sendMessageViaImgTag("ucc", apiParams, callback);
 }
 
+/*
+* Sends an Page Request message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the user
+* @param {string} [params.ipAddress] The current users IP address
+* @param {string} [params.pageAddress] The current page address (ex: index.html)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackPageRequest = function(params, callback)
 {
 	var apiParams = {
@@ -275,6 +507,19 @@ Kontagent.prototype.trackPageRequest = function(params, callback)
 	this._sendMessageViaImgTag("pgr", apiParams, callback);
 }
 
+/*
+* Sends an User Information message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the user
+* @param {int} [params.birthYear] The birth year of the user
+* @param {string} [params.gender] The gender of the user (m,f,u)
+* @param {string} [params.country] The 2-character country code of the user
+* @param {int} [params.friendCount] The friend count of the user
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackUserInformation = function (params, callback)
 {
 	var apiParams = {s : params.userId};
@@ -287,6 +532,19 @@ Kontagent.prototype.trackUserInformation = function (params, callback)
 	this._sendMessageViaImgTag("cpu", apiParams, callback);
 }
 
+/*
+* Sends an Goal Count message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the user
+* @param {int} [params.goalCount1] The amount to increment goal count 1 by
+* @param {int} [params.goalCount2] The amount to increment goal count 2 by
+* @param {int} [params.goalCount3] The amount to increment goal count 3 by
+* @param {int} [params.goalCount4] The amount to increment goal count 4 by
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackGoalCount = function(params, callback)
 {
 	var apiParams = {s : params.userId};
@@ -299,6 +557,20 @@ Kontagent.prototype.trackGoalCount = function(params, callback)
 	this._sendMessageViaImgTag("gci", apiParams, callback);
 }
 
+/*
+* Sends an Goal Count message to Kontagent.
+*
+* @param {object} params An object containing the params for this call.
+* @param {string} params.userId The UID of the user
+* @param {int} params.value The amount of revenue in cents
+* @param {string} [params.type] The transaction type (direct, indirect, advertisement, credits, other)
+* @param {string} [params.subtype1] Subtype1 value (max 32 chars)
+* @param {string} [params.subtype2] Subtype2 value (max 32 chars)
+* @param {string} [params.subtype3] Subtype3 value (max 32 chars)
+* @param {function} [callback] The callback function after request is complete.
+*
+* @throws {KtParameterException} An invalid parameter value was provided
+*/
 Kontagent.prototype.trackRevenueTracking = function(params, callback)
 {
 	var apiParams = {
@@ -314,12 +586,26 @@ Kontagent.prototype.trackRevenueTracking = function(params, callback)
 	this._sendMessageViaImgTag("mtu", apiParams, callback);
 }
 
-// Kontagent Validator
 
+/*
+* Helper class to validate the paramters for the Kontagent API messages. All 
+* 	methods are static so no need to instantiate this class.
+*
+* @constructor
+*/
 function KtValidator()
 {
 }
 
+/*
+* Validates a parameter of a given message type.
+*
+* @param {string} messageType The message type that the param belongs to (ex: ins, apa, etc.)
+* @param {string} paramName The name of the parameter (ex: s, su, u, etc.)
+* @param {mixed} paramValue The value of the parameter
+*
+* @returns {mixed} Returns true on success and an error message string on failure.
+*/
 KtValidator.validateParameter = function(messageType, paramName, paramValue) 
 {
 	return KtValidator['_validate' + KtValidator._upperCaseFirst(paramName)](messageType, paramName, paramValue);
