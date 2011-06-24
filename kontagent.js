@@ -558,7 +558,7 @@ Kontagent.prototype.trackGoalCount = function(params, callback)
 }
 
 /*
-* Sends an Goal Count message to Kontagent.
+* Sends an Revenue message to Kontagent.
 *
 * @param {object} params An object containing the params for this call.
 * @param {string} params.userId The UID of the user
@@ -571,7 +571,7 @@ Kontagent.prototype.trackGoalCount = function(params, callback)
 *
 * @throws {KtParameterException} An invalid parameter value was provided
 */
-Kontagent.prototype.trackRevenueTracking = function(params, callback)
+Kontagent.prototype.trackRevenue = function(params, callback)
 {
 	var apiParams = {
 		s : params.userId,
