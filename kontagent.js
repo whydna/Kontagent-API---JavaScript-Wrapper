@@ -1,11 +1,3 @@
-function KtParameterException(message)
-{
-	this.name = "KtParameterException";
-	this.message = (message) ? message : "";
-}
-
-KtParameterException.prototype = new Error();
-
 /*
 * Kontagent class constructor
 *
@@ -34,8 +26,6 @@ function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 * @param {object} params An associative array containing paramName => value (ex: 's'=>123456789)
 * @param {function} [successCallback] The callback function to execute once message has been sent successfully
 * @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
-*
-* @throws {KtParameterException} An invalid parameter value was provided
 */
 Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, successCallback, errorCallback)
 {
