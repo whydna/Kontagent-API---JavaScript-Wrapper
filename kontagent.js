@@ -43,8 +43,8 @@ Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, succes
 
  	var img = new Image();
 	
-	img.onerror = callback;
-	img.onload = callback;
+	img.onerror = successCallback;
+	img.onload = successCallback;
 	
 	if (this._useTestServer == true) {
 		img.src = this._baseTestServerUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
