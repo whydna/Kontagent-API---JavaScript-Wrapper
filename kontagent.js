@@ -32,11 +32,12 @@ function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 *
 * @param {string} messageType The message type to send ('apa', 'ins', etc.)
 * @param {object} params An associative array containing paramName => value (ex: 's'=>123456789)
-* @param {function} [callback] The callback function to execute once message has been sent
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 *
 * @throws {KtParameterException} An invalid parameter value was provided
 */
-Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, callback)
+Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, successCallback, errorCallback)
 {
 	if (this._validateParams == true) {
 		var result;
@@ -45,7 +46,7 @@ Kontagent.prototype._sendMessageViaImgTag = function(messageType, params, callba
 			result = KtValidator.validateParameter(messageType, paramKey, params[paramKey]);
 
 			if (result != true) {
-				throw new KtParameterException(result);
+				errorCallback(result);
 			}
 		}
 	}
@@ -139,11 +140,10 @@ Kontagent.prototype.genShortUniqueTrackingTag = function()
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackInviteSent = function(params, callback)
+Kontagent.prototype.trackInviteSent = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -155,7 +155,7 @@ Kontagent.prototype.trackInviteSent = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
-	this._sendMessageViaImgTag("ins", apiParams, callback);
+	this._sendMessageViaImgTag("ins", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -169,11 +169,10 @@ Kontagent.prototype.trackInviteSent = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackInviteResponse = function(params, callback)
+Kontagent.prototype.trackInviteResponse = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -185,7 +184,7 @@ Kontagent.prototype.trackInviteResponse = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
-	this._sendMessageViaImgTag("inr", apiParams, callback);
+	this._sendMessageViaImgTag("inr", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -200,11 +199,10 @@ Kontagent.prototype.trackInviteResponse = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackNotificationSent = function(params, callback)
+Kontagent.prototype.trackNotificationSent = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -216,7 +214,7 @@ Kontagent.prototype.trackNotificationSent = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
-	this._sendMessageViaImgTag("nts", apiParams, callback);
+	this._sendMessageViaImgTag("nts", apiParams, successCalback, errorCallback);
 }
 
 /*
@@ -230,11 +228,10 @@ Kontagent.prototype.trackNotificationSent = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackNotificationResponse = function(params, callback)
+Kontagent.prototype.trackNotificationResponse = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -246,7 +243,7 @@ Kontagent.prototype.trackNotificationResponse = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 	
-	this._sendMessageViaImgTag("ntr", apiParams, callback);
+	this._sendMessageViaImgTag("ntr", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -261,11 +258,10 @@ Kontagent.prototype.trackNotificationResponse = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
+Kontagent.prototype.trackNotificationEmailSent = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -277,7 +273,7 @@ Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
-	this._sendMessageViaImgTag("nes", apiParams, callback);
+	this._sendMessageViaImgTag("nes", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -291,12 +287,11 @@ Kontagent.prototype.trackNotificationEmailSent = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
 
-Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
+Kontagent.prototype.trackNotificationEmailResponse = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -308,7 +303,7 @@ Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 	
-	this._sendMessageViaImgTag("nei", apiParams, callback);
+	this._sendMessageViaImgTag("nei", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -324,12 +319,11 @@ Kontagent.prototype.trackNotificationEmailResponse = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
 
-Kontagent.prototype.trackStreamPost = function(params, callback)
+Kontagent.prototype.trackStreamPost = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -341,7 +335,7 @@ Kontagent.prototype.trackStreamPost = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
-	this._sendMessageViaImgTag("pst", apiParams, callback);
+	this._sendMessageViaImgTag("pst", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -357,11 +351,10 @@ Kontagent.prototype.trackStreamPost = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackStreamPostResponse = function(params, callback)
+Kontagent.prototype.trackStreamPostResponse = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -374,7 +367,7 @@ Kontagent.prototype.trackStreamPostResponse = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
-	this._sendMessageViaImgTag("psr", apiParams, callback);
+	this._sendMessageViaImgTag("psr", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -388,11 +381,10 @@ Kontagent.prototype.trackStreamPostResponse = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackEvent = function(params, callback)
+Kontagent.prototype.trackEvent = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -405,7 +397,7 @@ Kontagent.prototype.trackEvent = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }	
 
-	this._sendMessageViaImgTag("evt", apiParams, callback);
+	this._sendMessageViaImgTag("evt", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -419,20 +411,17 @@ Kontagent.prototype.trackEvent = function(params, callback)
 * @param {string} [params.shortUniqueTrackingTag] 8-digit hex string used to match 
 *	ThirdPartyCommClicks->ApplicationAdded messages. 
 *	See the genShortUniqueTrackingTag() helper method.
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackApplicationAdded = function(params, callback)
+Kontagent.prototype.trackApplicationAdded = function(params, successCallback, errorCallback)
 {
 	var apiParams = {s : params.userId};
 	
 	if (params.uniqueTrackingTag) { apiParams.u = params.uniqueTrackingTag; }
 	if (params.shortUniqueTrackingTag) { apiParams.su = params.shortUniqueTrackingTag; }
 
-	console.log(apiParams);
-
-	this._sendMessageViaImgTag("apa", apiParams, callback);
+	this._sendMessageViaImgTag("apa", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -440,15 +429,14 @@ Kontagent.prototype.trackApplicationAdded = function(params, callback)
 *
 * @param {object} params An object containing the params for this call.
 * @param {string} params.userId The UID of the removing user
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackApplicationRemoved = function(params, callback)
+Kontagent.prototype.trackApplicationRemoved = function(params, successCallback, errorCallback)
 {
 	var apiParams = {s : params.userId};
 	
-	this._sendMessageViaImgTag("apr", apiParams, callback);
+	this._sendMessageViaImgTag("apr", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -462,12 +450,11 @@ Kontagent.prototype.trackApplicationRemoved = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
 
-Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
+Kontagent.prototype.trackThirdPartyCommClick = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		i : (params.appIsInstalled) ? 1 : 0,
@@ -480,7 +467,7 @@ Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 	
-	this._sendMessageViaImgTag("ucc", apiParams, callback);
+	this._sendMessageViaImgTag("ucc", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -490,11 +477,10 @@ Kontagent.prototype.trackThirdPartyCommClick = function(params, callback)
 * @param {string} params.userId The UID of the user
 * @param {string} [params.ipAddress] The current users IP address
 * @param {string} [params.pageAddress] The current page address (ex: index.html)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackPageRequest = function(params, callback)
+Kontagent.prototype.trackPageRequest = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -504,7 +490,7 @@ Kontagent.prototype.trackPageRequest = function(params, callback)
 	if (params.ipAddress) { apiParams.ip = params.ipAddress; }
 	if (params.pageAddress) { apiParams.u = params.pageAddress; }
 
-	this._sendMessageViaImgTag("pgr", apiParams, callback);
+	this._sendMessageViaImgTag("pgr", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -516,11 +502,10 @@ Kontagent.prototype.trackPageRequest = function(params, callback)
 * @param {string} [params.gender] The gender of the user (m,f,u)
 * @param {string} [params.country] The 2-character country code of the user
 * @param {int} [params.friendCount] The friend count of the user
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackUserInformation = function (params, callback)
+Kontagent.prototype.trackUserInformation = function (params, successCallback, errorCallback)
 {
 	var apiParams = {s : params.userId};
 	
@@ -529,7 +514,7 @@ Kontagent.prototype.trackUserInformation = function (params, callback)
 	if (params.country) { apiParams.lc = params.country; }
 	if (params.friendCount) { apiParams.f = params.friendCount; }
 	
-	this._sendMessageViaImgTag("cpu", apiParams, callback);
+	this._sendMessageViaImgTag("cpu", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -541,11 +526,10 @@ Kontagent.prototype.trackUserInformation = function (params, callback)
 * @param {int} [params.goalCount2] The amount to increment goal count 2 by
 * @param {int} [params.goalCount3] The amount to increment goal count 3 by
 * @param {int} [params.goalCount4] The amount to increment goal count 4 by
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackGoalCount = function(params, callback)
+Kontagent.prototype.trackGoalCount = function(params, successCallback, errorCallback)
 {
 	var apiParams = {s : params.userId};
 	
@@ -554,7 +538,7 @@ Kontagent.prototype.trackGoalCount = function(params, callback)
 	if (params.goalCount3) { apiParams.gc3 = params.goalCount3; }
 	if (params.goalCount4) { apiParams.gc4 = params.goalCount4; }
 
-	this._sendMessageViaImgTag("gci", apiParams, callback);
+	this._sendMessageViaImgTag("gci", apiParams, successCallback, errorCallback);
 }
 
 /*
@@ -567,11 +551,10 @@ Kontagent.prototype.trackGoalCount = function(params, callback)
 * @param {string} [params.subtype1] Subtype1 value (max 32 chars)
 * @param {string} [params.subtype2] Subtype2 value (max 32 chars)
 * @param {string} [params.subtype3] Subtype3 value (max 32 chars)
-* @param {function} [callback] The callback function after request is complete.
-*
-* @throws {KtParameterException} An invalid parameter value was provided
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+* @param {function(error)} [errorCallback] The callback function to execute if there was an error sending the message
 */
-Kontagent.prototype.trackRevenue = function(params, callback)
+Kontagent.prototype.trackRevenue = function(params, successCallback, errorCallback)
 {
 	var apiParams = {
 		s : params.userId,
@@ -583,7 +566,7 @@ Kontagent.prototype.trackRevenue = function(params, callback)
 	if (params.subtype2) { apiParams.st2 = params.subtype2; }
 	if (params.subtype3) { apiParams.st3 = params.subtype3; }
 
-	this._sendMessageViaImgTag("mtu", apiParams, callback);
+	this._sendMessageViaImgTag("mtu", apiParams, successCallback, errorCallback);
 }
 
 
