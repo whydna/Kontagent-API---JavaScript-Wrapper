@@ -16,7 +16,7 @@ function Kontagent(apiKey, secretKey, useTestServer, validateParams)
 	this._apiKey = apiKey;
 	this._secretKey = secretKey;
 	this._useTestServer = (useTestServer) ? useTestServer : false;
-	this._validateParams = (validateParams) ? validateParams : true;
+	this._validateParams = (validateParams) ? validateParams : false;
 }
 
 /*
