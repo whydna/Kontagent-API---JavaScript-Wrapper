@@ -4,10 +4,10 @@
 
 		<script src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
-		<script src="./kontagent.js"></script>
+		<script src="./kontagent_api.js"></script>
 		<script>
 			// initialize Kontagent
-			var kt = new Kontagent('<YOUR_KT_API_KEY>', '<YOUR_KT_SECRET_KEY>');
+			var ktApi = new KontagentApi('<YOUR_KT_API_KEY>');
 
 			var fbUser = null;
 
@@ -22,8 +22,7 @@
 						var dataParts = response.data.split('|');
 						
 						// send invite request message to Kontagent
-						kt.trackInviteResponse({
-							uniqueTrackingTag : dataParts[0],
+						ktApi.trackInviteResponse(dataParts[0], {
 							recipientUserId : requestId,
 							subtype1 : dataParts[1],
 							subtype2 : dataParts[2],
@@ -42,7 +41,7 @@
 
 			function sendInvite()
 			{
-				var uniqueTrackingTag = kt.genUniqueTrackingTag();
+				var uniqueTrackingTag = ktApi.genUniqueTrackingTag();
 				var subtype1 = 'subtype1';
 				var subtype2 = 'subtype2';
 				var subtype3 = 'subtype3';
@@ -58,10 +57,7 @@
 					},
 					function(response) {
 						// send invite sent messag eto Kontagent
-						kt.trackInviteSent({
-							userId : fbUser.uid,
-							recipientUserIds : response.request_ids.join(','),
-							uniqueTrackingTag : uniqueTrackingTag,
+						ktApi.trackInviteSent(fbUser.uid, response.request_ids.join(','), uniqueTrackingTag, {
 							subtype1 : subtype1,
 							subtype2 : subtype2,
 							subtype3 : subtype3

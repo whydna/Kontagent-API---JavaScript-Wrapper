@@ -13,17 +13,17 @@ Read a page's GET URL variables and return them as an associative array.
 		<title>Kontagent Instrumentation Example: Third Party Click</title>
 
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
-		<script src="./kontagent.js"></script>
+		<script src="./kontagent_api.js"></script>
 		<script>
 			// initialize Kontagent
-			var kt = new Kontagent('<YOUR_KT_API_KEY>', '<YOUR_KT_SECRET_KEY>');
+			var ktApi = new KontagentApi('<YOUR_KT_API_KEY>');
 
 			// extract URL variables
 			var ktType = '<?php echo $_GET["kt_type"]; ?>';
 			var ktSt1 = '<?php echo $_GET["kt_st1"]; ?>';
 			var ktSt2 = '<?php echo $_GET["kt_st2"]; ?>';
 			var ktSt3 = '<?php echo $_GET["kt_st3"]; ?>';
-			var shortUniqueTrackingTag = kt.genShortUniqueTrackingTag();
+			var shortUniqueTrackingTag = ktApi.genShortUniqueTrackingTag();
 		</script>
 	</head>
 	<body>
@@ -36,9 +36,7 @@ Read a page's GET URL variables and return them as an associative array.
 
 			FB.api('/me', function(response) {
 				// track the ad/partner click
-				kt.trackThirdPartyCommClick({
-					'type' : ktType,
-					'shortUniqueTrackingTag' : shortUniqueTrackingTag,
+				ktApi.trackThirdPartyCommClick(ktType, shortUniqueTrackingTag, {
 					'userId' : response.uid,
 					'subtype1': ktSt1,
 					'subtype2': ktSt2,

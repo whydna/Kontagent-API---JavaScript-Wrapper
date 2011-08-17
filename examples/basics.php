@@ -3,10 +3,10 @@
 		<title>Kontagent Instrumentation Example: The Basics</title>
 
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
-		<script src="./kontagent.js"></script>
+		<script src="./kontagent_api.js"></script>
 		<script>
 			// initialize Kontagent
-			var kt = new Kontagent('<YOUR_KT_API_KEY>', '<YOUR_KT_SECRET_KEY>');
+			var ktApi = new KontagentApi('<YOUR_KT_API_KEY>');
 		</script>
 	</head>
 	<body>
@@ -21,16 +21,15 @@
 			FB.login(function(loginResponse) {
 				if (loginResponse.session) {
 					// track the page request
-					kt.trackPageRequest({'userId' : loginResponse.uid});
+					ktApi.trackPageRequest({'userId' : loginResponse.uid});
 
 					if (/* check if this is a new user */) {
 						// track the install
-						kt.trackApplicationAdded({'userId' : loginResponse.uid});
+						ktApi.trackApplicationAdded(loginResponse.uid);
 		
 						// get the users information and track the user information
 						FB.api('/me', function (meResponse) {
-							kt.trackUserInformation({
-								'userId' : meResponse.uid, 
+							ktApi.trackUserInformation(meResponse.uid, {
 								'gender' : meResponse.gender
 							});
 						});
