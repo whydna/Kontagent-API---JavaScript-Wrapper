@@ -43,8 +43,10 @@ KontagentApi.prototype._sendMessageViaImgTag = function(messageType, params, suc
 	
 	// The onerror callback will always be triggered because no image header is returned by our API.
 	// Which is fine because the request would have still gone through.
-	img.onerror = successCallback;
-	img.onload = successCallback;
+	if(successCallback) {
+	   img.onerror = successCallback;
+	   img.onload = successCallback;
+	}
 	
 	if (this._useTestServer == true) {
 		img.src = this._baseTestServerUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);

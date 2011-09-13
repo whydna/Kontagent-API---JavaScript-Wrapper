@@ -89,14 +89,7 @@ Full Class Reference
     * @param {bool} [optionalParams.useTestServer] Whether to send messages to the Kontagent Test Server
     * @param {bool} [optionalParams.validateParams] Whether to validate the parameters passed into the tracking method
     */
-    function KontagentApi(apiKey, optionalParams) {
-        this._baseApiUrl = "http://api.geo.kontagent.net/api/v1/";
-        this._baseTestServerUrl = "http://test-server.kontagent.net/api/v1/";
-
-        this._apiKey = apiKey;
-        this._useTestServer = (optionalParams.useTestServer) ? optionalParams.useTestServer : false;
-        this._validateParams = (optionalParams.validateParams) ? optionalParams.validateParams : false;
-    }
+    function KontagentApi(apiKey, optionalParams) 
 
 
     /*
