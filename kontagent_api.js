@@ -10,10 +10,12 @@
 */
 function KontagentApi(apiKey, optionalParams) {
 	this._baseApiUrl = "http://api.geo.kontagent.net/api/v1/";
-	this._baseTestServerUrl = "http://test-server.kontagent.net/api/v1/";
+	this._baseHttpsApiUrl = "https://api.geo.kontagent.net/api/v1/";
+	this._baseTestServerUrl = "http://test-server.kontagent.com/api/v1/";
 
 	this._apiKey = apiKey;
 	this._useTestServer = (optionalParams.useTestServer) ? optionalParams.useTestServer : false;
+	this._useHttps = (optionalParams.useHttps) ? optionalParams.useHttps : false;
 	this._validateParams = (optionalParams.validateParams) ? optionalParams.validateParams : false;
 }
 
@@ -51,7 +53,11 @@ KontagentApi.prototype._sendMessageViaImgTag = function(messageType, params, suc
 	if (this._useTestServer == true) {
 		img.src = this._baseTestServerUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
 	} else {
-		img.src = this._baseApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+		if (this._useHttps == true) {
+			img.src = this._baseHttpsApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+		} else {
+			img.src = this._baseApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+		}
 	}
 }
 
