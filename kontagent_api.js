@@ -20,6 +20,26 @@ function KontagentApi(apiKey, optionalParams) {
 }
 
 /*
+* Sends an HTTP request by creating an <img> tag given a URL.
+*
+* @param {string} url The request URL
+* @param {function} [successCallback] The callback function to execute once message has been sent successfully
+*/
+KontagentApi.prototype._sendHttpRequestViaImgTag(url, successCallback)
+{
+	var img = new Image();
+	
+	// The onerror callback will always be triggered because no image header is returned by our API.
+	// Which is fine because the request would have still gone through.
+	if (successCallback) {
+		img.onerror = successallback;
+		img.onload = successCallback;
+	}
+	
+	img.src = url;
+}
+
+/*
 * Sends the API message by creating an <img> tag.
 *
 * @param {string} messageType The message type to send ('apa', 'ins', etc.)
@@ -41,24 +61,19 @@ KontagentApi.prototype._sendMessageViaImgTag = function(messageType, params, suc
 		}
 	}
 
- 	var img = new Image();
-	
-	// The onerror callback will always be triggered because no image header is returned by our API.
-	// Which is fine because the request would have still gone through.
-	if(successCallback) {
-	   img.onerror = successCallback;
-	   img.onload = successCallback;
-	}
-	
+	var url;	
+
 	if (this._useTestServer == true) {
-		img.src = this._baseTestServerUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+		url = this._baseTestServerUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
 	} else {
 		if (this._useHttps == true) {
-			img.src = this._baseHttpsApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+			url = this._baseHttpsApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
 		} else {
-			img.src = this._baseApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
+			url = this._baseApiUrl + this._apiKey + "/" + messageType + "/?" + this._httpBuildQuery(params);
 		}
 	}
+
+	this._sendHttpRequestViaImgTag(url);
 }
 
 /*
