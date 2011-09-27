@@ -25,7 +25,7 @@ function KontagentApi(apiKey, optionalParams) {
 * @param {string} url The request URL
 * @param {function} [successCallback] The callback function to execute once message has been sent successfully
 */
-KontagentApi.prototype._sendHttpRequestViaImgTag(url, successCallback)
+KontagentApi.prototype._sendHttpRequestViaImgTag = function(url, successCallback)
 {
 	var img = new Image();
 	
@@ -391,7 +391,6 @@ KontagentApi.prototype.trackStreamPostResponse = function(uniqueTrackingTag, typ
 *
 * @param {string} userId The UID of the user
 * @param {string} eventName The name of the event
-
 * @param {object} [optionalParams] An object containing paramName => value
 * @param {int} [optionalParams.value] A value associated with the event
 * @param {int} [optionalParams.level] A level associated with the event (must be positive)
@@ -401,7 +400,7 @@ KontagentApi.prototype.trackStreamPostResponse = function(uniqueTrackingTag, typ
 * @param {function} [successCallback] The callback function to execute once message has been sent successfully
 * @param {function(error)} [validationErrorCallback] The callback function to execute on validation failure
 */
-KontagentApi.prototype.trackEvent = function(optionalParams, successCallback, validationErrorCallback) {
+KontagentApi.prototype.trackEvent = function(userId, eventName, optionalParams, successCallback, validationErrorCallback) {
 	var apiParams = {
 		s : userId,
 		n : eventName
@@ -590,6 +589,7 @@ KontagentApi.prototype.trackRevenue = function(userId, value, optionalParams, su
 	this._sendMessageViaImgTag("mtu", apiParams, successCallback, validationErrorCallback);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 /*
 * Helper class to validate the paramters for the Kontagent API messages. All 
@@ -602,6 +602,7 @@ function KtValidator() {
 
 /*
 * Validates a parameter of a given message type.
+* IMPORTANT: When evaluating the return, use a strict-type comparison: if(response === true) {}
 *
 * @param {string} messageType The message type that the param belongs to (ex: ins, apa, etc.)
 * @param {string} paramName The name of the parameter (ex: s, su, u, etc.)
