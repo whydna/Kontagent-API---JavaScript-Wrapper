@@ -226,7 +226,7 @@ KontagentApi.prototype.trackNotificationSent = function(userId, recipientUserIds
 		if (optionalParams.subtype3) { apiParams.st3 = optionalParams.subtype3; }
 	}
 	
-	this._sendMessageViaImgTag("nts", apiParams, successCalback, validationErrorCallback);
+	this._sendMessageViaImgTag("nts", apiParams, successCallback, validationErrorCallback);
 }
 
 /*
