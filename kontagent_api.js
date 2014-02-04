@@ -14,9 +14,11 @@ function KontagentApi(apiKey, optionalParams) {
 	this._baseTestServerUrl = "http://test-server.kontagent.com/api/v1/";
 
 	this._apiKey = apiKey;
-	this._useTestServer = (optionalParams.useTestServer) ? optionalParams.useTestServer : false;
-	this._useHttps = (optionalParams.useHttps) ? optionalParams.useHttps : false;
-	this._validateParams = (optionalParams.validateParams) ? optionalParams.validateParams : false;
+	if (optionalParams != null && typeof optionalParams != 'undefined') {
+        this._useTestServer = (optionalParams.useTestServer) ? optionalParams.useTestServer : false;
+        this._useHttps = (optionalParams.useHttps) ? optionalParams.useHttps : false;
+        this._validateParams = (optionalParams.validateParams) ? optionalParams.validateParams : false;
+    }
 }
 
 /*
@@ -32,7 +34,7 @@ KontagentApi.prototype._sendHttpRequestViaImgTag = function(url, successCallback
 	// The onerror callback will always be triggered because no image header is returned by our API.
 	// Which is fine because the request would have still gone through.
 	if (successCallback) {
-		img.onerror = successallback;
+		img.onerror = successCallback;
 		img.onload = successCallback;
 	}
 	
@@ -91,7 +93,7 @@ KontagentApi.prototype._httpBuildQuery = function(data) {
 		val = encodeURIComponent(decodeURIComponent(data[key].toString()));
 		key = encodeURIComponent(decodeURIComponent(key));
 
-		tmpArray.push(key + "=" + val);  
+		tmpArray.push(key + "=" + val);
 	}
 
 	return tmpArray.join("&");
