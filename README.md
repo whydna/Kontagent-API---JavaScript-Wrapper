@@ -1,4 +1,4 @@
-For our official documentation go here: http://www.kontagent.com/docs/api-libraries/js-wrapper/
+For our official documentation go here: http://www.kontagent.com/docs/api-libraries/js-wrapper-advanced/
 
 Overview
 -----------------
